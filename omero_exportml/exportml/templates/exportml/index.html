@@ -9,7 +9,10 @@
 			<p>Images: </p>
 			<ul>
 			{% for image in dataset.images %}
-				<li>{{image.name}}<br><img src="data:image/jpeg;base64, {{thumbnails|get_encoded:image.id}}" /></li>
+				<li>{{image.name}}<br><img src="data:image/jpeg;base64, {{thumbnails|get_encoded:image.id}}" />
+				<br>
+				<a href="{% url 'get_roi_patches' image.id%}">ROIs</a>
+				</li>
 			{% endfor %}
 			</ul>
 		</li>
