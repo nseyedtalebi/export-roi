@@ -16,7 +16,7 @@ def index(request):
 	projects = []
 	thumbnails = {}
 	for project in conn.listProjects():
-		has_images = False
+		can_get_rois = False
 		p = {'id':project.id,
 			 'name':project.name,
 		     'datasets':[]
@@ -27,17 +27,23 @@ def index(request):
 			'images':[]
 			}
 			for image in dataset.listChildren():
-				if image.getROICount() > 0:
-					ds['images'].append(image.simpleMarshal())
-					has_images = True
-					thumbnails[image.id] = image.getThumbnail(size=(image.getSizeX()*0.005,image.getSizeY()*0.005))
+				#if image.getROICount() > 0:
+				img_meta = image.simpleMarshal()
+				if dataset.name != 'ROI_images' and len(img_from_roi.getRectangles(conn,image)) >0:
+					img_meta['can_get_rois'] = True
+				ds['images'].append(img_meta)
+				size_x = image.getSizeX()
+				size_y = image.getSizeY()
+				if size_x*0.005 > 256:
+					thumbnails[image.id] = image.getThumbnail(size=(size_x*0.005,size_y*0.005))
+				else:
+					thumbnails[image.id] = image.getThumbnail(size=(size_x*0.1,size_y*0.1))
 			p['datasets'].append(ds)
-		if has_images:
-			projects.append(p)
+		projects.append(p)
 	conn.close()
 	return render(request, 'exportml/index.html',{'projects':projects,'thumbnails':thumbnails})
 
-def get_roi_patches(request,image_id):
+def make_roi_images(request,image_id):
 	conn = BlitzGateway('root','omero-root-password',host='192.168.1.22')
 	if not conn.connect():
 		return HttpResponseServerError("Could not connect to Omero server")

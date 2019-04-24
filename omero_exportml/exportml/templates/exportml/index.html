@@ -9,10 +9,10 @@
 			<p>Images: </p>
 			<ul>
 			{% for image in dataset.images %}
-				<li>{{image.name}}<br><img src="data:image/jpeg;base64, {{thumbnails|get_encoded:image.id}}" />
-				<br>
-				<a href="{% url 'get_roi_patches' image.id%}">ROIs</a>
-				</li>
+				<li><!--{{image}}<br>--><img src="data:image/jpeg;base64, {{thumbnails|get_encoded:image.id}}" /></li>
+				{% if image.can_get_rois %}
+				<li><a href="{% url 'make_roi_images' image.id%}">Generate Images from ROIs</a></li>
+				{% endif %}
 			{% endfor %}
 			</ul>
 		</li>

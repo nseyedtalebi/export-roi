@@ -4,5 +4,5 @@ from . import views
 
 urlpatterns = [
 	url(r'^$', views.index, name='index'),
-	url(r'get_roi_patches/(\d+)', views.get_roi_patches,name='get_roi_patches')
+	url(r'make_roi_images/(\d+)', views.make_roi_images,name='make_roi_images')
 ]
