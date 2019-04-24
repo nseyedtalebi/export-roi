@@ -7,6 +7,8 @@ from django.http import HttpResponse
 import omero
 from omero.gateway import BlitzGateway
 
+import img_from_roi
+
 def index(request):
 	conn = BlitzGateway('root','omero-root-password',host='192.168.1.22')
 	if not conn.connect():
@@ -39,8 +41,8 @@ def get_roi_patches(request,image_id):
 	conn = BlitzGateway('root','omero-root-password',host='192.168.1.22')
 	if not conn.connect():
 		return HttpResponseServerError("Could not connect to Omero server")
-	roi_service = conn.getRoiService()
-	result = roi_service.findByImage(long(image_id), None)
+	#roi_service = conn.getRoiService()
+	#result = roi_service.findByImage(long(image_id), None)
 	#for roi in result.rois:
 	#	for s in roi.copyShapes():
 	#		#prints way too much info, would be good for ragged shapes
@@ -49,5 +51,11 @@ def get_roi_patches(request,image_id):
 	#		#For now, just get rectangle working
 	#		if type(s) == omero.model.RectangleI:
 	#			print("Hey!")'''
-	rois = [result.rois]
-	return HttpResponse(rois)
+	#rois = [result.rois]
+	parameterMap = {'Data_Type':'Image',
+	'IDs':[long(image_id)],
+	'New_Dataset':True,
+	'New_Dataset_Name':'ROI_images',
+	'Entire_Stack':False
+	}
+	return HttpResponse(img_from_roi.makeImagesFromRois(conn,parameterMap))
