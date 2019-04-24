@@ -1,0 +1,21 @@
+{% load exportml_extras %}
+<h1>Projects</h1>
+{% for project in projects%}
+	<p>Name: {{project.name}}</p>
+	<p>Datasets:</p>
+	<ul>
+	{% for dataset in project.datasets %}
+		<li><p>Name: {{dataset.name}}</p>
+			<p>Images: </p>
+			<ul>
+			{% for image in dataset.images %}
+				<li>{{image.name}}<br><img src="data:image/jpeg;base64, {{thumbnails|get_encoded:image.id}}" /></li>
+			{% endfor %}
+			</ul>
+		</li>
+	{% endfor %}
+	</ul>
+{% empty %}
+	<p>No projects with eligible images</p>
+{% endfor %}
+    	
