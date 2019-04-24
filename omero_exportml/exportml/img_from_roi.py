@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
 """
+Slightly modified this code:
+https://github.com/openmicroscopy/omero-example-scripts/processing_scripts/New_Images_From_ROIs.py
+
+Begin original:
 This is a modified version of Alex Herbert's original script.
 This script has been modified so it can be used
 with OMERO version 5.2.x or newer.

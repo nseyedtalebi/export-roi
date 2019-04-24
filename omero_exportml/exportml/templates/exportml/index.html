@@ -12,6 +12,7 @@
 				<li><!--{{image}}<br>--><img src="data:image/jpeg;base64, {{thumbnails|get_encoded:image.id}}" /></li>
 				{% if image.can_get_rois %}
 				<li><a href="{% url 'make_roi_images' image.id%}">Generate Images from ROIs</a></li>
+				<li><a href="{% url 'export_rois' image.id%}">Export ROI data</a></li>
 				{% endif %}
 			{% endfor %}
 			</ul>

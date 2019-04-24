@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+import json 
 
 from django.http import HttpResponseServerError
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpResponse,JsonResponse
 import omero
 from omero.gateway import BlitzGateway
 
@@ -47,21 +48,32 @@ def make_roi_images(request,image_id):
 	conn = BlitzGateway('root','omero-root-password',host='192.168.1.22')
 	if not conn.connect():
 		return HttpResponseServerError("Could not connect to Omero server")
-	#roi_service = conn.getRoiService()
-	#result = roi_service.findByImage(long(image_id), None)
-	#for roi in result.rois:
-	#	for s in roi.copyShapes():
-	#		#prints way too much info, would be good for ragged shapes
-	#		#print roi_service.getPoints(s.getId().getValue())
-	#		#print s
-	#		#For now, just get rectangle working
-	#		if type(s) == omero.model.RectangleI:
-	#			print("Hey!")'''
-	#rois = [result.rois]
 	parameterMap = {'Data_Type':'Image',
 	'IDs':[long(image_id)],
 	'New_Dataset':True,
 	'New_Dataset_Name':'ROI_images',
 	'Entire_Stack':False
 	}
-	return HttpResponse(img_from_roi.makeImagesFromRois(conn,parameterMap))
+	msg = img_from_roi.makeImagesFromRois(conn,parameterMap)
+	conn.close()
+	return render(request, 'exportml/gen_roi_message.html', {'messages':msg})
+	#return HttpResponse(img_from_roi.makeImagesFromRois(conn,parameterMap))
+
+
+def export_rois(request,image_id):
+	conn = BlitzGateway('root','omero-root-password',host='192.168.1.22')
+	if not conn.connect():
+		return HttpResponseServerError("Could not connect to Omero server")
+	image = conn.getObject("Image",image_id)
+	rectangles = [{'x':rectangle[0],
+				   'y':rectangle[1],
+				   'width':rectangle[2],
+				   'height':rectangle[3],
+				   'zStart':rectangle[4],
+				   'zStop':rectangle[5],
+				   'tStart':rectangle[6],
+				   'tStop':rectangle[7],
+				   } for rectangle in img_from_roi.getRectangles(conn,image)]
+	img_meta = image.simpleMarshal()
+	img_meta['rectangles'] = rectangles
+	return JsonResponse(img_meta)
