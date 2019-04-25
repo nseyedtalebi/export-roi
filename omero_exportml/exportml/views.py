@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 import json 
+import os 
 
 from django.http import HttpResponseServerError
 from django.shortcuts import render
@@ -11,7 +12,7 @@ from omero.gateway import BlitzGateway
 import img_from_roi
 
 def index(request):
-	conn = BlitzGateway('root','omero-root-password',host='192.168.1.22')
+	conn = BlitzGateway('root','omero-root-password',host=os.environ['OMEROHOST'])
 	if not conn.connect():
 		return HttpResponseServerError("Could not connect to Omero server")
 	projects = []
@@ -61,7 +62,7 @@ def make_roi_images(request,image_id):
 
 
 def export_rois(request,image_id):
-	conn = BlitzGateway('root','omero-root-password',host='192.168.1.22')
+	conn = BlitzGateway('root','omero-root-password',host=os.environ['OMEROHOST'])
 	if not conn.connect():
 		return HttpResponseServerError("Could not connect to Omero server")
 	image = conn.getObject("Image",image_id)
