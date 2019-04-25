@@ -46,7 +46,7 @@ def index(request):
 	return render(request, 'exportml/index.html',{'projects':projects,'thumbnails':thumbnails})
 
 def make_roi_images(request,image_id):
-	conn = BlitzGateway('root','omero-root-password',host='192.168.1.22')
+	conn = BlitzGateway('root','omero-root-password',host=os.environ['OMEROHOST'])
 	if not conn.connect():
 		return HttpResponseServerError("Could not connect to Omero server")
 	parameterMap = {'Data_Type':'Image',
